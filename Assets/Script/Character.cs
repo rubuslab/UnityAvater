@@ -1,27 +1,38 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class UCharacterController {
+public class Character {
+
+    /// <summary>
+    /// 装备类型枚举
+    /// </summary>
+    public enum EquipmentType
+    {
+        Head = 0,
+        Chest = 1,
+        Hand = 2,
+        Feet = 3
+    }
 
     /// <summary>
     /// GameObject reference
     /// </summary>
-	public GameObject Instance = null;
-	public GameObject WeaponInstance = null;
+	public GameObject skeletonInstance = null;
+	public GameObject weaponInstance = null;
 
     /// <summary>
     /// Equipment informations
     /// </summary>
-	public string skeleton;
-	public string equipment_head;
-	public string equipment_chest;
-	public string equipment_hand;
-	public string equipment_feet;
+	public string skeletonName;
+	public string equipmentHeadName;
+	public string equipmentChestName;
+	public string equipmentHandName;
+	public string equipmentFeetName;
 
     /// <summary>
     /// The unique id in the scene
     /// </summary>
-	public int index;
+	public int characterIndex;
 
     /// <summary>
     /// Other vars
@@ -31,17 +42,17 @@ public class UCharacterController {
 
 	private Animation animationController = null;
 
-	public UCharacterController (int index,string skeleton, string weapon, string head, string chest, string hand, string feet, bool combine = false) {
+	public Character (int index, string skeleton, string weapon, string head, string chest, string hand, string feet, bool combine = false) {
 
-		//Creates the skeleton object
+		//Creates the skeletonName object
 		Object res = Resources.Load ("Prefab/" + skeleton);
-		this.Instance = GameObject.Instantiate (res) as GameObject;
-		this.index = index;
-		this.skeleton = skeleton;
-		this.equipment_head = head;
-		this.equipment_chest = chest;
-		this.equipment_hand = hand;
-		this.equipment_feet = feet;
+		this.skeletonInstance = GameObject.Instantiate (res) as GameObject;
+		this.characterIndex = index;
+		this.skeletonName = skeleton;
+		this.equipmentHeadName = head;
+		this.equipmentChestName = chest;
+		this.equipmentHandName = hand;
+		this.equipmentFeetName = feet;
 		
 		string[] equipments = new string[4];
 		equipments [0] = head;
@@ -60,92 +71,91 @@ public class UCharacterController {
 		}
 		
         // Combine meshes
-		App.Game.CharacterMgr.CombineSkinnedMgr.CombineObject (Instance, meshes, combine);
+		CombineSkinnedHelper.CombineToSkeletonObject(skeletonInstance, meshes, combine);
 
         // Delete temporal resources
         for (int i = 0; i < objects.Length; i++) {
-			
-			GameObject.DestroyImmediate (objects [i].gameObject);
+			GameObject.DestroyImmediate(objects[i].gameObject);
 		}
 		
 		// Create weapon
 		res = Resources.Load ("Prefab/" + weapon);
-		WeaponInstance = GameObject.Instantiate (res) as GameObject;
+		weaponInstance = GameObject.Instantiate (res) as GameObject;
 		
-		Transform[] transforms = Instance.GetComponentsInChildren<Transform>();
+		Transform[] transforms = skeletonInstance.GetComponentsInChildren<Transform>();
 		foreach (Transform joint in transforms) {
 			if (joint.name == "weapon_hand_r") {// find the joint (need the support of art designer)
-				WeaponInstance.transform.parent = joint.gameObject.transform;
+				weaponInstance.transform.parent = joint.gameObject.transform;
 				break;
 			}	
 		}
 
         // Init weapon relative informations
-		WeaponInstance.transform.localScale = Vector3.one;
-		WeaponInstance.transform.localPosition = Vector3.zero;
-		WeaponInstance.transform.localRotation = Quaternion.identity;
+		weaponInstance.transform.localScale = Vector3.one;
+		weaponInstance.transform.localPosition = Vector3.zero;
+		weaponInstance.transform.localRotation = Quaternion.identity;
 
         // Only for display
-		animationController = Instance.GetComponent<Animation>();
+		animationController = skeletonInstance.GetComponent<Animation>();
 		PlayStand();
 	}
 
 	public void ChangeHeadEquipment (string equipment,bool combine = false)
 	{
-		ChangeEquipment (0, equipment, combine);
+		ChangeEquipment (EquipmentType.Head, equipment, combine);
 	}
 	
 	public void ChangeChestEquipment (string equipment,bool combine = false)
 	{
-		ChangeEquipment (1, equipment, combine);
+		ChangeEquipment (EquipmentType.Chest, equipment, combine);
 	}
 	
 	public void ChangeHandEquipment (string equipment,bool combine = false)
 	{
-		ChangeEquipment (2, equipment, combine);
+		ChangeEquipment (EquipmentType.Hand, equipment, combine);
 	}
 	
 	public void ChangeFeetEquipment (string equipment,bool combine = false)
 	{
-		ChangeEquipment (3, equipment, combine);
+		ChangeEquipment (EquipmentType.Feet, equipment, combine);
 	}
 	
 	public void ChangeWeapon (string weapon)
 	{
 		Object res = Resources.Load ("Prefab/" + weapon);
-		GameObject oldWeapon = WeaponInstance;
-		WeaponInstance = GameObject.Instantiate (res) as GameObject;
-		WeaponInstance.transform.parent = oldWeapon.transform.parent;
-		WeaponInstance.transform.localPosition = Vector3.zero;
-		WeaponInstance.transform.localScale = Vector3.one;
-		WeaponInstance.transform.localRotation = Quaternion.identity;
+		GameObject oldWeapon = weaponInstance;
+		weaponInstance = GameObject.Instantiate (res) as GameObject;
+		weaponInstance.transform.parent = oldWeapon.transform.parent;
+		weaponInstance.transform.localPosition = Vector3.zero;
+		weaponInstance.transform.localScale = Vector3.one;
+		weaponInstance.transform.localRotation = Quaternion.identity;
 		
 		GameObject.Destroy(oldWeapon);
 	}
 	
-	public void ChangeEquipment (int index, string equipment,bool combine = false)
+	public void ChangeEquipment (EquipmentType equipmentType, string equipment, bool combine = false)
 	{
-		switch (index) {
+		switch (equipmentType) {
 			
-		case 0:
-			equipment_head = equipment;
+		case EquipmentType.Head:
+			equipmentHeadName = equipment;
 			break;
-		case 1:
-			equipment_chest = equipment;
+		case EquipmentType.Chest:
+			equipmentChestName = equipment;
 			break;
-		case 2:
-			equipment_hand = equipment;
+		case EquipmentType.Hand:
+			equipmentHandName = equipment;
 			break;
-		case 3:
-			equipment_feet = equipment;
+		case EquipmentType.Feet:
+			equipmentFeetName = equipment;
 			break;
 		}
 		
 		string[] equipments = new string[4];
-		equipments [0] = equipment_head;
-		equipments [1] = equipment_chest;
-		equipments [2] = equipment_hand;
-		equipments [3] = equipment_feet;
+		equipments [0] = equipmentHeadName;
+		equipments [1] = equipmentChestName;
+		equipments [2] = equipmentHandName;
+		equipments [3] = equipmentFeetName;
 		
 		Object res = null;
 		SkinnedMeshRenderer[] meshes = new SkinnedMeshRenderer[4];
@@ -157,10 +167,9 @@ public class UCharacterController {
 			meshes[i] = objects[i].GetComponentInChildren<SkinnedMeshRenderer> ();
 		}
 		
-		App.Game.CharacterMgr.CombineSkinnedMgr.CombineObject (Instance, meshes, combine);
-		
-		for (int i = 0; i < objects.Length; i++) {
-			
+		CombineSkinnedHelper.CombineToSkeletonObject(skeletonInstance, meshes, combine);
+
+        for (int i = 0; i < objects.Length; i++) {
 			GameObject.DestroyImmediate(objects[i].gameObject);
 		}
 	}
@@ -194,7 +203,7 @@ public class UCharacterController {
 		}
 		if (rotate)
 		{
-			Instance.transform.Rotate(new Vector3(0,90 * Time.deltaTime,0));
+			skeletonInstance.transform.Rotate(new Vector3(0,90 * Time.deltaTime,0));
 		}
 	}
 }

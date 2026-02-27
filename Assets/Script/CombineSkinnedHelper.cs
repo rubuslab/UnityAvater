@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class UCombineSkinnedMgr {
+public class CombineSkinnedHelper {
 
     /// <summary>
     /// Only for merge materials.
@@ -11,15 +11,15 @@ public class UCombineSkinnedMgr {
 	private const string COMBINE_DIFFUSE_TEXTURE = "_MainTex";
 
     /// <summary>
-    /// Combine SkinnedMeshRenderers together and share one skeleton.
+    /// Combine SkinnedMeshRenderers together and share one skeletonName.
     /// Merge materials will reduce the drawcalls, but it will increase the size of memory. 
     /// </summary>
-    /// <param name="skeleton">combine meshes to this skeleton(a gameobject)</param>
+    /// <param name="skeleton">combine meshes to this skeletonName(a gameobject)</param>
     /// <param name="meshes">meshes need to be merged</param>
     /// <param name="combine">merge materials or not</param>
-	public void CombineObject (GameObject skeleton, SkinnedMeshRenderer[] meshes, bool combine = false){
+	public static void CombineToSkeletonObject (GameObject skeleton, SkinnedMeshRenderer[] meshes, bool combine = false){
 
-		// Fetch all bones of the skeleton
+		// Fetch all bones of the skeletonName
 		List<Transform> transforms = new List<Transform>();
 		transforms.AddRange(skeleton.GetComponentsInChildren<Transform>(true));
 

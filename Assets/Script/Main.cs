@@ -22,11 +22,10 @@ using System.Collections;
 public class App
 {
 	private static App app = new App();
+    private CharacterMgr characterMgr = new CharacterMgr();
 
-	public static App Game { get { return app; } }
-
-	private UCharacterMgr characterMgr = new UCharacterMgr ();
-	public UCharacterMgr CharacterMgr { get { return characterMgr; } }
+    public static App Game { get { return app; } }
+	public CharacterMgr CharacterMgr { get { return characterMgr; } }
 
 	public void Update ()
 	{
@@ -60,7 +59,7 @@ public class Main : MonoBehaviour {
     /// <summary>
     /// The avatar in the scene.
     /// </summary>
-	private UCharacterController character = null;
+	private Character character = null;
 
 	// Use this for initialization
 	void Start () {
@@ -81,8 +80,8 @@ public class Main : MonoBehaviour {
 			"ch_pc_hou_" + index[DEFAULT_HAND] + "_shou", 
 			"ch_pc_hou_" + index[DEFAULT_FEET] + "_jiao",
 			combine);
-		character.Instance.transform.position = new Vector3 (0, -1, -5);
-		character.Instance.transform.eulerAngles = new Vector3 (0, 180, 0);
+		character.skeletonInstance.transform.position = new Vector3 (0, -1, -5);
+		character.skeletonInstance.transform.eulerAngles = new Vector3 (0, 180, 0);
 	}
 	
 	// Update is called once per frame
@@ -99,7 +98,7 @@ public class Main : MonoBehaviour {
 
 		for (int i = 0; i < weapon_list.Length; i++) {
 			
-			if (GUI.Button (new Rect (i * 100, 30, 100, 50), "Weapon" + (weapon_list[i] ? "(√)" : ""))) {
+			if (GUI.Button (new Rect (i * 100, 30, 100, 50), "Weapon" + (weapon_list[i] ? " (√)" : ""))) {
 				
 				if (!weapon_list [i]) {
 					for (int j = 0; j < weapon_list.Length; j++) {
@@ -114,7 +113,7 @@ public class Main : MonoBehaviour {
 
 		for (int i = 0; i < head_list.Length; i++) {
 
-			if (GUI.Button (new Rect (i * 100, 80, 100, 50), "Head" + (head_list[i] ? "(√)" : ""))) {
+			if (GUI.Button (new Rect (i * 100, 80, 100, 50), "Head" + (head_list[i] ? " (√)" : ""))) {
 
 				if (!head_list [i]) {
 					for (int j = 0; j < head_list.Length; j++) {
@@ -129,7 +128,7 @@ public class Main : MonoBehaviour {
 
 		for (int i = 0; i < chest_list.Length; i++) {
 
-			if (GUI.Button (new Rect (i * 100, 130, 100, 50), "Chest" + (chest_list[i] ? "(√)" : ""))) {
+			if (GUI.Button (new Rect (i * 100, 130, 100, 50), "Chest" + (chest_list[i] ? " (√)" : ""))) {
 
 				if (!chest_list [i]) {
 					for (int j = 0; j < chest_list.Length; j++) {
@@ -144,7 +143,7 @@ public class Main : MonoBehaviour {
 
 		for (int i = 0; i < hand_list.Length; i++) {
 
-			if (GUI.Button (new Rect (i * 100, 180, 100, 50), "Hand" + (hand_list[i] ? "(√)" : ""))) {
+			if (GUI.Button (new Rect (i * 100, 180, 100, 50), "Hand" + (hand_list[i] ? " (√)" : ""))) {
 
 				if (!hand_list [i]) {
 					for (int j = 0; j < hand_list.Length; j++) {
@@ -159,7 +158,7 @@ public class Main : MonoBehaviour {
 
 		for (int i = 0; i < feet_list.Length; i++) {
 
-			if (GUI.Button (new Rect (i * 100, 230, 100, 50), "Feet" + (feet_list[i] ? "(√)" : ""))) {
+			if (GUI.Button (new Rect (i * 100, 230, 100, 50), "Feet" + (feet_list[i] ? " (√)" : ""))) {
 
 				if (!feet_list [i]) {
 					for (int j = 0; j < feet_list.Length; j++) {
@@ -194,7 +193,7 @@ public class Main : MonoBehaviour {
 			}
 		}
 
-        if (GUI.Button(new Rect(Screen.width - 150, 100, 150, 50), combine ? "Merge materials(√)" : "Merge materials"))
+        if (GUI.Button(new Rect(Screen.width - 150, 100, 150, 50), combine ? "Merge materials (√)" : "Merge materials"))
         {
             combine = !combine;
         }
